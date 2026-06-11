@@ -3,7 +3,9 @@
 SELECT * 
 FROM layoffs_staging2;
 
--- Section 1: Initial Exploration
+ /* =========================================================
+	SECTION 1: INITIAL EXPLORATORY ANALYSIS
+    ========================================================= */
 
 SELECT MAX(total_laid_off),MAX(percentage_laid_off)
 FROM layoffs_staging2;
@@ -17,7 +19,9 @@ FROM layoffs_staging2
 WHERE percentage_laid_off=1
 ORDER BY total_laid_off DESC;
 
--- Section 2: Company / Industry / Country Analysis
+ /* =========================================================
+	SECTION 2: COMPANY, INDUSTRY, AND COUNTRY ANALYSIS
+    ========================================================= */
 
 SELECT company, SUM(total_laid_off)
 FROM layoffs_staging2
@@ -36,3 +40,32 @@ SELECT country, SUM(total_laid_off)
 FROM layoffs_staging2
 GROUP BY country
 ORDER BY 2 DESC;
+
+/* =========================================================
+   SECTION 3: TIME-BASED TREND ANALYSIS
+   ========================================================= */
+
+SELECT YEAR(`date`), SUM(total_laid_off)
+FROM layoffs_staging2
+GROUP BY YEAR(`date`)
+ORDER BY 2 DESC;
+
+SELECT DATE_FORMAT(`date`,'%Y-%m') AS month, SUM(total_laid_off)
+FROM layoffs_staging2
+WHERE `date` IS NOT NULL
+GROUP BY month
+ORDER BY month ;
+
+
+/* =========================================================
+   SECTION 4: ROLLING TOTAL ANALYSIS
+   ========================================================= */
+   
+   
+   
+   
+   
+   
+   /* =========================================================
+   SECTION 5: COMPANY RANKING ANALYSIS
+   ========================================================= */

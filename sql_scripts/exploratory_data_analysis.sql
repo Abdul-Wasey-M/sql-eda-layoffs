@@ -71,14 +71,14 @@ WHERE `date` IS NOT NULL
 GROUP BY month
 ORDER BY month ;
  
- WITH ex_1 AS
+ WITH Rolling_Total AS
 (SELECT SUBSTRING(`date`,1,7) AS Month, SUM(total_laid_off) AS Total
 FROM layoffs_staging2
 WHERE `date` IS NOT NULL
 GROUP BY month
 ORDER BY month )
 SELECT Month,Total,SUM(Total) OVER(ORDER BY month) AS Rolling_total
-FROM ex_1;
+FROM Rolling_Total;
    
    
    
@@ -86,3 +86,20 @@ FROM ex_1;
    /* =========================================================
    SECTION 5: COMPANY RANKING ANALYSIS
    ========================================================= */
+   
+SELECT company,YEAR(`date`) AS `Year` ,SUM(total_laid_off)
+FROM layoffs_staging2
+GROUP BY company,YEAR(`date`)
+ORDER BY 3 DESC;
+
+WITH Company_year(Company,Years,Total_laid_off) AS
+(SELECT company,YEAR(`date`) AS `Year` ,SUM(total_laid_off)
+FROM layoffs_staging2
+GROUP BY company,YEAR(`date`)),
+Company_year_Rank AS
+(SELECT *, DENSE_RANK() OVER(PARTITION BY Years ORDER BY Total_laid_off DESC) AS Ranking
+FROM Company_year
+WHERE Years IS NOT NULL)
+SELECT * 
+FROM Company_year_Rank
+WHERE Ranking <=5;

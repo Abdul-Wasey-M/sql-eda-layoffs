@@ -56,12 +56,29 @@ WHERE `date` IS NOT NULL
 GROUP BY month
 ORDER BY month ;
 
+SELECT stage, SUM(total_laid_off)
+FROM layoffs_staging2
+GROUP BY stage
+ORDER BY 2 DESC;
 
 /* =========================================================
    SECTION 4: ROLLING TOTAL ANALYSIS
    ========================================================= */
    
-   
+SELECT SUBSTRING(`date`,1,7) AS month, SUM(total_laid_off) 
+FROM layoffs_staging2
+WHERE `date` IS NOT NULL
+GROUP BY month
+ORDER BY month ;
+ 
+ WITH ex_1 AS
+(SELECT SUBSTRING(`date`,1,7) AS Month, SUM(total_laid_off) AS Total
+FROM layoffs_staging2
+WHERE `date` IS NOT NULL
+GROUP BY month
+ORDER BY month )
+SELECT Month,Total,SUM(Total) OVER(ORDER BY month) AS Rolling_total
+FROM ex_1;
    
    
    
